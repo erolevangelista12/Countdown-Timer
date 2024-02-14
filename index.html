@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #87ceeb;
+    }
+
+    #container {
+      border: 3px solid black;
+      border-radius: 20px;
+      padding: 20px;
+      background-color: #f4f2e5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #timer {
+      font-size: 3.5em;
+      margin-bottom: 15px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    button {
+      color: #fff;
+      font-size: 1.3em;
+      font-weight: bold;
+      margin: 5px;
+      padding: 10px 20px;
+      background-color: #FF0000;
+      border: 2px solid;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+
+    .timer-input {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    .timer-input input {
+      width: 2em;
+      font-size: 2em;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .timer-input span {
+      font-size: 2em;
+    }
+
+    .timer-input button {
+      background-color: #4CAF50;
+    }
+
+    .start-button {
+      margin-top: 15px;
+    }
+  </style>
+  <title>Countdown Timer</title>
+</head>
+<body>
+
+<div id="container">
+  <h1>Countdown Timer</h1>
+  <div class="timer-input" id="timerInput">
+    <input type="text" id="hoursInput" maxlength="2" oninput="limitToNumbers(this)" placeholder="hh">
+    <span>:</span>
+    <input type="text" id="minutesInput" maxlength="2" oninput="limitToNumbers(this)" placeholder="mm">
+    <span>:</span>
+    <input type="text" id="secondsInput" maxlength="2" oninput="limitToNumbers(this)" placeholder="ss">
+  </div>
+  <button id="startButton" onclick="startTimer()">Start</button>
+  <div id="timer" style="display: none;">00:00:00.00</div>
+  <button id="backButton" onclick="goBack()" style="display: none;">Back</button>
+</div>
+
+<script>
+  let timerInterval;
+  let totalMilliseconds;
+
+  function startTimer() {
+    const hours = parseInt(document.getElementById('hoursInput').value) || 0;
+    const minutes = parseInt(document.getElementById('minutesInput').value) || 0;
+    const seconds = parseInt(document.getElementById('secondsInput').value) || 0;
+
+    totalMilliseconds = (hours * 3600 + minutes * 60 + seconds) * 1000;
+
+    if (isNaN(totalMilliseconds) || totalMilliseconds <= 0) {
+      alert("Please enter a valid time in the format hh:mm:ss.");
+      return;
+    }
+
+    document.getElementById('timerInput').style.display = 'none';
+    document.getElementById('timer').style.display = 'block';
+    document.getElementById('startButton').style.display = 'none'; // Hide the start button
+    document.getElementById('backButton').style.display = 'block'; // Show the back button
+
+    timerInterval = setInterval(updateTimer, 10);
+  }
+
+  function updateTimer() {
+    if (totalMilliseconds > 0) {
+      totalMilliseconds -= 10;
+      const hours = Math.floor(totalMilliseconds / (1000 * 3600));
+      const minutes = Math.floor((totalMilliseconds % (1000 * 3600)) / (1000 * 60));
+      const seconds = Math.floor((totalMilliseconds % (1000 * 60)) / 1000);
+      const milliseconds = Math.floor((totalMilliseconds % 1000) / 10);
+      document.getElementById('timer').textContent = `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}.${formatMilliseconds(milliseconds)}`;
+    } else {
+      clearInterval(timerInterval);
+      document.getElementById('timer').textContent = "Time's up!";
+    }
+  }
+
+  function formatTime(time) {
+    return time < 10 ? `0${time}` : time;
+  }
+
+  function formatMilliseconds(milliseconds) {
+    return milliseconds < 10 ? `0${milliseconds}` : milliseconds;
+  }
+
+  function limitLength(element, maxLength) {
+    if (element.value.length > maxLength) {
+      element.value = element.value.slice(0, maxLength);
+    }
+  }
+
+  function limitToNumbers(element) {
+    element.value = element.value.replace(/\D/g, '');
+  }
+
+  function goBack() {
+    clearInterval(timerInterval);
+    document.getElementById('timerInput').style.display = 'flex';
+    document.getElementById('timer').style.display = 'none';
+    document.getElementById('startButton').style.display = 'block';
+    document.getElementById('backButton').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
